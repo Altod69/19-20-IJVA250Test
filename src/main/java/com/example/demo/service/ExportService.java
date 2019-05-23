@@ -62,19 +62,25 @@ public class ExportService {
 
 		Workbook workbook = new XSSFWorkbook();
 		CellStyle style = workbook.createCellStyle();
+		CellStyle randomCellStyle = workbook.createCellStyle();
+		
 		Font whiteFont = workbook.createFont();
 		
 		
 		whiteFont.setColor(IndexedColors.WHITE.getIndex());
 		whiteFont.setBold(true);
 		
+		style.setWrapText(true);
 		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		style.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
 		style.setFont(whiteFont);
+		
+		randomCellStyle.setWrapText(true);
         
         for (Client client : allClients) {
-        	Sheet sheet = workbook.createSheet("Client" + client.getId());
+        	Sheet sheet = workbook.createSheet(client.getNom());
         	Row headerRow = sheet.createRow(0);
+        	sheet.setColumnWidth(3, 4000);
             
             Cell cellId = headerRow.createCell(0);
             cellId.setCellStyle(style);
@@ -88,6 +94,10 @@ public class ExportService {
             cellNom.setCellStyle(style);
             cellNom.setCellValue("Nom");
 
+            Cell cellNbFacture = headerRow.createCell(3);
+            cellNbFacture.setCellStyle(style);
+            cellNbFacture.setCellValue("Nombre factures");
+            
         	Row row = sheet.createRow(1);
 
             Cell id = row.createCell(0);
@@ -101,10 +111,17 @@ public class ExportService {
             
             List<Facture> factures = factureService.findFacturesClient(client.getId());
             
+            Cell nbFacture = row.createCell(3);
+            nbFacture.setCellValue(factures.size());
+            
             if(factures.size() > 0) {
             	for(Facture facture : factures) {
                 	Sheet sheetFacture = workbook.createSheet("Facture" + facture.getId());
                 	Row headerFactureRow = sheetFacture.createRow(0);
+                	
+                	sheetFacture.setColumnWidth(1, 10000);
+                	sheetFacture.setColumnWidth(2, 10000);
+                	sheetFacture.setColumnWidth(5, 4000);
                 	
                 	Cell cellheaderArticleId = headerFactureRow.createCell(0);
                 	cellheaderArticleId.setCellStyle(style);
@@ -114,15 +131,19 @@ public class ExportService {
                     cellheaderArticleLibelle.setCellStyle(style);
                     cellheaderArticleLibelle.setCellValue("Libelle");
 
-                    Cell cellheaderArticlePrix = headerFactureRow.createCell(2);
+                    Cell cellheaderArticleDescriptif = headerFactureRow.createCell(2);
+                    cellheaderArticleDescriptif.setCellStyle(style);
+                    cellheaderArticleDescriptif.setCellValue("Descriptif");
+                    
+                    Cell cellheaderArticlePrix = headerFactureRow.createCell(3);
                     cellheaderArticlePrix.setCellStyle(style);
                     cellheaderArticlePrix.setCellValue("Prix");
                     
-                    Cell cellheaderArticleQuantite = headerFactureRow.createCell(3);
+                    Cell cellheaderArticleQuantite = headerFactureRow.createCell(4);
                     cellheaderArticleQuantite.setCellStyle(style);
                     cellheaderArticleQuantite.setCellValue("Quantite");
                     
-                    Cell cellheaderArticleSousTotal = headerFactureRow.createCell(4);
+                    Cell cellheaderArticleSousTotal = headerFactureRow.createCell(5);
                     cellheaderArticleSousTotal.setCellStyle(style);
                     cellheaderArticleSousTotal.setCellValue("Sous Total");
                     
@@ -136,15 +157,20 @@ public class ExportService {
                     	cellArticleId.setCellValue(article.getArticle().getId());
                         
                         Cell cellArticleLibelle = ligneFactureRow.createCell(1);
+                        cellArticleLibelle.setCellStyle(randomCellStyle);
                         cellArticleLibelle.setCellValue(article.getArticle().getLibelle());
                         
-                        Cell cellArticlePrix = ligneFactureRow.createCell(2);
+                        Cell cellArticleDescriptif = ligneFactureRow.createCell(2);
+                        cellArticleDescriptif.setCellStyle(randomCellStyle);
+                        cellArticleDescriptif.setCellValue(article.getArticle().getDescriptif());
+                        
+                        Cell cellArticlePrix = ligneFactureRow.createCell(3);
                         cellArticlePrix.setCellValue(article.getArticle().getPrix());
 
-                        Cell cellArticleQuantite = ligneFactureRow.createCell(3);
+                        Cell cellArticleQuantite = ligneFactureRow.createCell(4);
                         cellArticleQuantite.setCellValue(article.getQuantite());
                         
-                        Cell cellArticleSousTotal = ligneFactureRow.createCell(4);
+                        Cell cellArticleSousTotal = ligneFactureRow.createCell(5);
                         cellArticleSousTotal.setCellValue(article.getSousTotal());
                         
                         rowIndex++;
@@ -156,11 +182,11 @@ public class ExportService {
                     cellTotalFactureLibelle.setCellStyle(style);
                     cellTotalFactureLibelle.setCellValue("TOTAL");
                     
-                    Cell cellTotalFactureMontant = totalFactureRow.createCell(4);
+                    Cell cellTotalFactureMontant = totalFactureRow.createCell(5);
                     cellTotalFactureMontant.setCellStyle(style);
                     cellTotalFactureMontant.setCellValue(facture.getTotal());
                     
-                    sheetFacture.addMergedRegion(new CellRangeAddress(rowIndex,rowIndex,0,3));
+                    sheetFacture.addMergedRegion(new CellRangeAddress(rowIndex,rowIndex,0,4));
                 }
 	
             }

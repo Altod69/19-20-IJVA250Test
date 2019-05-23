@@ -15,6 +15,9 @@ public class Article {
 
     @Column
     private String libelle;
+    
+    @Column
+    private String descriptif;
 
     @Column
     private double prix;
@@ -35,7 +38,15 @@ public class Article {
         this.libelle = libelle;
     }
 
-    public double getPrix() {
+    public String getDescriptif() {
+		return descriptif;
+	}
+
+	public void setDescriptif(String descriptif) {
+		this.descriptif = descriptif;
+	}
+
+	public double getPrix() {
         return prix;
     }
 
